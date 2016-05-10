@@ -85,10 +85,10 @@ module MagentoAPI
         raise MagentoAPI::ApiError, OpenStruct.new(faultCode: 100, faultString: "Requested shipment not exists.") if results.blank?
 
         if find_type == :first
-          find(results.first.increment_id)
+          new(commit("info", results.first["increment_id"]))
         else
           results.collect do |s|
-            find(s.increment_id)
+            new(commit("info", s["increment_id"]))
           end
         end
 
