@@ -3,9 +3,13 @@
 # Instead, edit Jeweler::Tasks in Rakefile, and run the gemspec command
 # -*- encoding: utf-8 -*-
 
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'magento/version'
+
 Gem::Specification.new do |s|
   s.name = %q{magentor}
-  s.version = "0.3.5"
+  s.version = MagentoAPI::VERSION
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Lachlan Priest"]
@@ -20,7 +24,6 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "TODOS",
-     "VERSION",
      "init.rb",
      "lib/magento/base.rb",
      "lib/magento/category.rb",
@@ -46,6 +49,7 @@ Gem::Specification.new do |s|
      "lib/magento/region.rb",
      "lib/magento/shipment.rb",
      "lib/magento/store.rb",
+     "lib/magento/version.rb",
      "lib/magentor.rb",
      "magentor.gemspec"
   ]
