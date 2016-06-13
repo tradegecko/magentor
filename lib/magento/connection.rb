@@ -1,10 +1,11 @@
 module MagentoAPI
   class Connection
-    attr_accessor :session, :config, :logger
+    attr_accessor :session, :config, :logger, :last_call
 
     def initialize(config = {})
       @logger = MagentoAPI.logger
       @config = config
+      @last_call = nil
       self
     end
 
@@ -25,7 +26,7 @@ module MagentoAPI
     private
 
       def connect!
-        logger.debug "call: login"
+        log_call("login")
         retry_on_connection_error do
           @session = client.call("login", config[:username], config[:api_key])
         end
@@ -36,7 +37,7 @@ module MagentoAPI
       end
 
       def call_without_caching(method = nil, *args)
-        logger.debug "call: #{method}, #{args.inspect}"
+        log_call("#{method}, #{args.inspect}")
         connect
         retry_on_connection_error do
           client.call_async("call", session, method, args)
@@ -67,6 +68,11 @@ module MagentoAPI
           attempts += 1
           retry if attempts < 2
         end
+      end
+
+      def log_call(message)
+        @last_call = message
+        logger.debug "call: #{message}"
       end
   end
 end
