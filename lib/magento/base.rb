@@ -25,6 +25,12 @@ module MagentoAPI
         method = "#{api_path}.#{method}"
 
         MagentoAPI::Base.connection.call(method, *args)
+      rescue RuntimeError => ex
+        if ex.message.include?("Wrong content-type")
+          raise InvalidResponseFormat.new(ex.message)
+        else
+          raise
+        end
       end
 
       def api_path
@@ -82,6 +88,15 @@ module MagentoAPI
 
     include InstanceMethods
     extend ClassMethods
+  end
+
+  class InvalidResponseFormat < StandardError
+    attr_reader :code
+
+    def initialize(message)
+      @code = "415"
+      super(message)
+    end
   end
 
   class ApiError < StandardError
