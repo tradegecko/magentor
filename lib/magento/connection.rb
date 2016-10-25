@@ -40,9 +40,12 @@ module MagentoAPI
         log_call("#{method}, #{args.inspect}")
         connect
         retry_on_connection_error do
-          client.call_async("call", session, method, args)
+          client.call_async("call", session, method, args).tap do |response|
+            notify_about_request(method, response, args)
+          end
         end
       rescue XMLRPC::FaultException => e
+        notify_about_request(method, e.faultString, args)
         if e.faultCode == 5 # Session timeout
           connect!
           retry
@@ -73,6 +76,20 @@ module MagentoAPI
       def log_call(message)
         @last_call = message
         logger.debug "call: #{message}"
+      end
+
+
+      def notify_about_request(method, response, *args)
+        ActiveSupport::Notifications.instrument("request.magento_api") do |payload|
+          payload[:method]        = method
+          payload[:request_uri]   = config[:uri].to_s
+          payload[:request_body]  = if args.is_a?(Array) &&
+                                       args[0].is_a?(Array) &&
+                                       args[0][1].is_a?(Hash)
+                                      args[0][1].to_json
+                                    end
+          payload[:response_body] = response.to_s
+        end
       end
   end
 end

@@ -19,6 +19,7 @@ require 'magento/connection'
 require 'magento/base'
 require 'magento/helpers/collection'
 require 'magento/helpers/crud'
+require 'active_support/notifications'
 
 module MagentoAPI
   autoload :CategoryAttribute,   "magento/category_attribute"
