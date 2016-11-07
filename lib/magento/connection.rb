@@ -1,6 +1,7 @@
 module MagentoAPI
   class Connection
     attr_accessor :session, :config, :logger, :last_call
+    MAX_ATTEMPTS = 2
 
     def initialize(config = {})
       @logger = MagentoAPI.logger
@@ -37,6 +38,7 @@ module MagentoAPI
       end
 
       def call_without_caching(method = nil, *args)
+        attempts ||= 0
         log_call("#{method}, #{args.inspect}")
         connect
         retry_on_connection_error do
@@ -48,7 +50,8 @@ module MagentoAPI
         notify_about_request(method, e.faultString, args)
         if e.faultCode == 5 # Session timeout
           connect!
-          retry
+          attempts += 1
+          retry if attempts < MAX_ATTEMPTS
         end
         raise MagentoAPI::ApiError, e
       end
@@ -69,7 +72,7 @@ module MagentoAPI
           yield
         rescue EOFError
           attempts += 1
-          retry if attempts < 2
+          retry if attempts < MAX_ATTEMPTS
         end
       end
 
