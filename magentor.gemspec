@@ -58,6 +58,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{Ruby wrapper for the MagentoAPI xmlrpc api}
+  s.add_dependency("xmlrpc")
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
