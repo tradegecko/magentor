@@ -27,7 +27,19 @@ module MagentoAPI
         MagentoAPI::Base.connection.call(method, *args)
       rescue RuntimeError => ex
         if ex.message.include?("Wrong content-type")
-          raise InvalidResponseFormat.new(ex.message)
+          raise InvalidResponseFormat.new(415, ex.message)
+        elsif ex.message.include?('401')
+          raise Unauthorized.new(401, ex.message)
+        elsif ex.message.include?('403')
+          raise AccessDenied.new(403, ex.message)
+        elsif ex.message.include?('404')
+          raise NotFound.new(404, ex.message)
+        elsif ex.message.include?('406')
+          raise NotAcceptable.new(406, ex.message)
+        elsif ex.message.include?('302')
+          raise SiteMovedTemporarily.new(302, ex.message)
+        elsif ex.message.include?('301')
+          raise SiteMovedPermanently.new(301, ex.message)
         else
           raise
         end
@@ -90,13 +102,34 @@ module MagentoAPI
     extend ClassMethods
   end
 
-  class InvalidResponseFormat < StandardError
+  class MagentoRuntimeError < StandardError
     attr_reader :code
 
-    def initialize(message)
-      @code = "415"
+    def initialize(code, message)
+      @code = code
       super(message)
     end
+  end
+
+  class InvalidResponseFormat < MagentoRuntimeError
+  end
+
+  class Unauthorized < MagentoRuntimeError
+  end
+
+  class AccessDenied < MagentoRuntimeError
+  end
+
+  class NotFound < MagentoRuntimeError
+  end
+
+  class NotAcceptable < MagentoRuntimeError
+  end
+
+  class SiteMovedTemporarily < MagentoRuntimeError
+  end
+
+  class SiteMovedPermanently < MagentoRuntimeError
   end
 
   class ApiError < StandardError
