@@ -22,6 +22,7 @@ require 'magento/helpers/crud'
 require 'active_support/notifications'
 
 module MagentoAPI
+  autoload :CatalogProduct,      "magento/catalog_product"
   autoload :CategoryAttribute,   "magento/category_attribute"
   autoload :Category,            "magento/category"
   autoload :Country,             "magento/country"

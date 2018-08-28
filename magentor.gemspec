@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
      "TODOS",
      "init.rb",
      "lib/magento/base.rb",
+     "lib/magento/catalog_product.rb",
      "lib/magento/category.rb",
      "lib/magento/category_attribute.rb",
      "lib/magento/connection.rb",
@@ -69,4 +70,3 @@ Gem::Specification.new do |s|
   else
   end
 end
-
