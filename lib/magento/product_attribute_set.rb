@@ -25,10 +25,8 @@ module MagentoAPI ##TODO
         commit("attributeAdd", attribute_id, id, group_id)
       end
 
-      def attributes(id)
-        MagentoAPI::Base.connection.call(
-          "catalog_product.listOfAdditionalAttributes",
-          "simple", id)
+      def attributes(id, product_type='simple')
+        MagentoAPI::CatalogProduct.list_of_additional_attributes(product_type, id)
       end
 
       def products(id)
