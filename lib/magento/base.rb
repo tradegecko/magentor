@@ -28,6 +28,8 @@ module MagentoAPI
       rescue RuntimeError => ex
         if ex.message.include?("Wrong content-type")
           raise InvalidResponseFormat.new(415, ex.message)
+        elsif ex.message.include?('500')
+          raise InternalServerError.new(500, ex.message)
         elsif ex.message.include?('401')
           raise Unauthorized.new(401, ex.message)
         elsif ex.message.include?('403')
@@ -109,6 +111,9 @@ module MagentoAPI
       @code = code
       super(message)
     end
+  end
+
+  class InternalServerError < MagentoRuntimeError
   end
 
   class InvalidResponseFormat < MagentoRuntimeError
