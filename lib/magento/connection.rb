@@ -2,6 +2,7 @@ module MagentoAPI
   class Connection
     attr_accessor :session, :config, :logger, :last_call
     MAX_ATTEMPTS = 2
+    SERVICE_UNAVAILABLE_REGEX = /error.*503/
 
     def initialize(config = {})
       @logger = MagentoAPI.logger
@@ -28,8 +29,17 @@ module MagentoAPI
 
       def connect!
         log_call("login")
-        retry_on_connection_error do
-          @session = client.call("login", config[:username], config[:api_key])
+        begin
+          retry_on_connection_error do
+            @session = client.call("login", config[:username], config[:api_key])
+          end
+        rescue RuntimeError => e
+          if e.message.match?(SERVICE_UNAVAILABLE_REGEX)
+            log_call("Failed to connect. URI=#{config[:uri]&.host}")
+            raise ServiceUnavailable.new(503, "Service Unavailable")
+          else
+            raise e
+          end
         end
       end
 
