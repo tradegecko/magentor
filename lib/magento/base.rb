@@ -137,6 +137,9 @@ module MagentoAPI
   class SiteMovedPermanently < MagentoRuntimeError
   end
 
+  class ServiceUnavailable < MagentoRuntimeError
+  end
+
   class ApiError < StandardError
     attr_reader :code
 
